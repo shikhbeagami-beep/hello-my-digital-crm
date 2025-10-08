@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile - Digital Marketing CRM</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="dashboard">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <h2>Client Portal</h2>
+        <nav>
+          <a href="/client/dashboard">Dashboard</a>
+          <a href="/client/spending">Spending History</a>
+          <a href="/client/profile" class="active">My Profile</a>
+        </nav>
+        <div class="user-info">
+          <p><strong><%= user.name %></strong></p>
+          <p>Role: Client</p>
+          <a href="/logout" class="btn btn-secondary btn-sm mt-2">Logout</a>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <div class="header">
+          <h1>My Profile</h1>
+        </div>
+
+        <div class="table-container">
+          <div class="table-header">
+            <h2>Profile Information</h2>
+          </div>
+          <div style="padding: 30px;">
+            <div class="grid-2 mb-3">
+              <div>
+                <p style="margin-bottom: 15px;">
+                  <strong>Full Name:</strong><br>
+                  <%= client.name %>
+                </p>
+                <p style="margin-bottom: 15px;">
+                  <strong>Username:</strong><br>
+                  <%= client.username %>
+                </p>
+                <p style="margin-bottom: 15px;">
+                  <strong>Email:</strong><br>
+                  <%= client.email || 'Not provided' %>
+                </p>
+              </div>
+              <div>
+                <p style="margin-bottom: 15px;">
+                  <strong>Phone:</strong><br>
+                  <%= client.phone || 'Not provided' %>
+                </p>
+                <p style="margin-bottom: 15px;">
+                  <strong>WhatsApp Number:</strong><br>
+                  <%= client.whatsapp_number || 'Not provided' %>
+                </p>
+                <p style="margin-bottom: 15px;">
+                  <strong>Facebook Profile:</strong><br>
+                  <% if (client.facebook_link) { %>
+                    <a href="<%= client.facebook_link %>" target="_blank">View Profile</a>
+                  <% } else { %>
+                    Not provided
+                  <% } %>
+                </p>
+              </div>
+            </div>
+
+            <div class="stats-grid">
+              <div class="stat-card">
+                <h3>Current Balance</h3>
+                <div class="value">$<%= client.balance.toFixed(2) %></div>
+              </div>
+              <div class="stat-card">
+                <h3>Account Created</h3>
+                <div class="value" style="font-size: 18px;"><%= new Date(client.created_at).toLocaleDateString() %></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

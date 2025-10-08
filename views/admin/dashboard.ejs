@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Digital Marketing CRM</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="dashboard">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <h2>Digital CRM</h2>
+        <nav>
+          <a href="/admin/dashboard" class="active">Dashboard</a>
+          <a href="/admin/clients">Clients</a>
+          <a href="/admin/projects">Running Projects</a>
+          <a href="/admin/topups">Topup Requests</a>
+        </nav>
+        <div class="user-info">
+          <p><strong><%= user.name %></strong></p>
+          <p>Role: <%= user.role %></p>
+          <a href="/logout" class="btn btn-secondary btn-sm mt-2">Logout</a>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <div class="header">
+          <h1>Dashboard</h1>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Total Clients</h3>
+            <div class="value"><%= totalClients %></div>
+          </div>
+          <div class="stat-card">
+            <h3>Total Spend</h3>
+            <div class="value">$<%= totalSpend %></div>
+          </div>
+          <div class="stat-card">
+            <h3>Pending Topups</h3>
+            <div class="value"><%= pendingTopups.length %></div>
+          </div>
+        </div>
+
+        <!-- Pending Topup Requests -->
+        <% if (pendingTopups.length > 0) { %>
+        <div class="table-container">
+          <div class="table-header">
+            <h2>Pending Topup Requests</h2>
+            <a href="/admin/topups" class="btn btn-primary btn-sm">View All</a>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Amount</th>
+                <th>Requested</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% pendingTopups.slice(0, 5).forEach(topup => { %>
+              <tr>
+                <td><%= topup.client_name %></td>
+                <td>$<%= topup.amount.toFixed(2) %></td>
+                <td><%= new Date(topup.requested_at).toLocaleDateString() %></td>
+                <td>
+                  <form method="POST" action="/admin/topups/<%= topup.id %>/process" style="display: inline;">
+                    <input type="hidden" name="action" value="approve">
+                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                  </form>
+                  <form method="POST" action="/admin/topups/<%= topup.id %>/process" style="display: inline;">
+                    <input type="hidden" name="action" value="reject">
+                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                  </form>
+                </td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+        <% } %>
+
+        <!-- Clients List -->
+        <div class="table-container">
+          <div class="table-header">
+            <h2>All Clients</h2>
+            <a href="/admin/clients/add" class="btn btn-primary btn-sm">Add Client</a>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Balance</th>
+                <th>WhatsApp</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% clients.forEach(client => { %>
+              <tr>
+                <td><%= client.name %></td>
+                <td><%= client.email || '-' %></td>
+                <td><%= client.phone || '-' %></td>
+                <td>$<%= client.balance.toFixed(2) %></td>
+                <td>
+                  <% if (client.whatsapp_number) { %>
+                    <a href="/admin/clients/<%= client.id %>/whatsapp" class="btn btn-success btn-sm" target="_blank">Send Message</a>
+                  <% } else { %>
+                    -
+                  <% } %>
+                </td>
+                <td>
+                  <a href="/admin/clients/<%= client.id %>" class="btn btn-primary btn-sm">View Details</a>
+                </td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Running Projects -->
+        <% if (runningProjects.length > 0) { %>
+        <div class="table-container">
+          <div class="table-header">
+            <h2>Running Projects</h2>
+            <a href="/admin/projects" class="btn btn-primary btn-sm">View All</a>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>Client</th>
+                <th>Type</th>
+                <th>Assigned To</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% runningProjects.forEach(project => { %>
+              <tr>
+                <td><%= project.project_name %></td>
+                <td><%= project.client_name %></td>
+                <td><span class="badge badge-info"><%= project.project_type.replace('_', ' ') %></span></td>
+                <td><%= project.assigned_to_name || 'Unassigned' %></td>
+                <td><span class="badge badge-warning"><%= project.status %></span></td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

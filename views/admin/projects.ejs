@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Running Projects - Digital Marketing CRM</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="dashboard">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <h2>Digital CRM</h2>
+        <nav>
+          <a href="/admin/dashboard">Dashboard</a>
+          <a href="/admin/clients">Clients</a>
+          <a href="/admin/projects" class="active">Running Projects</a>
+          <a href="/admin/topups">Topup Requests</a>
+        </nav>
+        <div class="user-info">
+          <p><strong><%= user.name %></strong></p>
+          <p>Role: <%= user.role %></p>
+          <a href="/logout" class="btn btn-secondary btn-sm mt-2">Logout</a>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <div class="header">
+          <h1>Running Projects</h1>
+          <button onclick="showAddProjectModal()" class="btn btn-primary">Add New Project</button>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Project Name</th>
+                <th>Client</th>
+                <th>Type</th>
+                <th>Website URL</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Assigned To</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (projects.length > 0) { %>
+                <% projects.forEach(project => { %>
+                <tr>
+                  <td><%= project.project_name %></td>
+                  <td><%= project.client_name %></td>
+                  <td><span class="badge badge-info"><%= project.project_type.replace(/_/g, ' ') %></span></td>
+                  <td>
+                    <% if (project.website_url) { %>
+                      <a href="<%= project.website_url %>" target="_blank"><%= project.website_url %></a>
+                    <% } else { %>
+                      -
+                    <% } %>
+                  </td>
+                  <td><%= project.username || '-' %></td>
+                  <td><%= project.password || '-' %></td>
+                  <td><%= project.assigned_to_name || 'Unassigned' %></td>
+                  <td>
+                    <span class="badge badge-<%= project.status === 'completed' ? 'success' : project.status === 'on_hold' ? 'danger' : 'warning' %>">
+                      <%= project.status.replace('_', ' ') %>
+                    </span>
+                  </td>
+                  <td>
+                    <button onclick="editProject(<%= project.id %>)" class="btn btn-primary btn-sm">Edit</button>
+                  </td>
+                </tr>
+                <% }); %>
+              <% } else { %>
+                <tr>
+                  <td colspan="9" style="text-align: center; color: #6b7280;">No projects found</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Project Modal -->
+  <div id="addProjectModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add New Project</h2>
+        <button class="close-modal" onclick="closeModal('addProjectModal')">&times;</button>
+      </div>
+      <form method="POST" action="/admin/projects/add">
+        <div class="form-group">
+          <label for="client_id">Client *</label>
+          <select id="client_id" name="client_id" required>
+            <option value="">Select Client</option>
+            <% clients.forEach(client => { %>
+              <option value="<%= client.id %>"><%= client.name %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="project_type">Project Type *</label>
+          <select id="project_type" name="project_type" required>
+            <option value="facebook_marketing">Facebook Marketing</option>
+            <option value="website_development">Website Development</option>
+            <option value="landing_page">Landing Page Design</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="project_name">Project Name *</label>
+          <input type="text" id="project_name" name="project_name" required>
+        </div>
+        <div class="form-group">
+          <label for="website_url">Website URL</label>
+          <input type="url" id="website_url" name="website_url">
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username">
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="text" id="password" name="password">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="assigned_to">Assign To</label>
+          <select id="assigned_to" name="assigned_to">
+            <option value="">Unassigned</option>
+            <% employees.forEach(employee => { %>
+              <option value="<%= employee.id %>"><%= employee.name %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="notes">Notes</label>
+          <textarea id="notes" name="notes" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Project</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function showAddProjectModal() {
+      document.getElementById('addProjectModal').classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    function editProject(projectId) {
+      // Implement edit functionality
+      alert('Edit project functionality - ID: ' + projectId);
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('addProjectModal');
+      if (event.target == modal) {
+        modal.classList.remove('active');
+      }
+    }
+  </script>
+</body>
+</html>

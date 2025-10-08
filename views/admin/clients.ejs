@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clients - Digital Marketing CRM</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="dashboard">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <h2>Digital CRM</h2>
+        <nav>
+          <a href="/admin/dashboard">Dashboard</a>
+          <a href="/admin/clients" class="active">Clients</a>
+          <a href="/admin/projects">Running Projects</a>
+          <a href="/admin/topups">Topup Requests</a>
+        </nav>
+        <div class="user-info">
+          <p><strong><%= user.name %></strong></p>
+          <p>Role: <%= user.role %></p>
+          <a href="/logout" class="btn btn-secondary btn-sm mt-2">Logout</a>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <div class="header">
+          <h1>All Clients</h1>
+          <a href="/admin/clients/add" class="btn btn-primary">Add New Client</a>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Balance</th>
+                <th>WhatsApp</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (clients.length > 0) { %>
+                <% clients.forEach(client => { %>
+                <tr>
+                  <td><%= client.name %></td>
+                  <td><%= client.email || '-' %></td>
+                  <td><%= client.phone || '-' %></td>
+                  <td>$<%= client.balance.toFixed(2) %></td>
+                  <td>
+                    <% if (client.whatsapp_number) { %>
+                      <a href="/admin/clients/<%= client.id %>/whatsapp" class="btn btn-success btn-sm" target="_blank">
+                        Send Message
+                      </a>
+                    <% } else { %>
+                      -
+                    <% } %>
+                  </td>
+                  <td>
+                    <a href="/admin/clients/<%= client.id %>" class="btn btn-primary btn-sm">View Details</a>
+                  </td>
+                </tr>
+                <% }); %>
+              <% } else { %>
+                <tr>
+                  <td colspan="6" style="text-align: center; color: #6b7280;">No clients found</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
