@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Dashboard - Digital Marketing CRM</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="dashboard">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <h2>Client Portal</h2>
+        <nav>
+          <a href="/client/dashboard" class="active">Dashboard</a>
+          <a href="/client/spending">Spending History</a>
+          <a href="/client/profile">My Profile</a>
+        </nav>
+        <div class="user-info">
+          <p><strong><%= user.name %></strong></p>
+          <p>Role: Client</p>
+          <a href="/logout" class="btn btn-secondary btn-sm mt-2">Logout</a>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <div class="header">
+          <h1>Welcome, <%= client.name %></h1>
+        </div>
+
+        <!-- Balance Card -->
+        <div class="balance-card">
+          <h2>Current Balance</h2>
+          <div class="amount">$<%= client.balance.toFixed(2) %></div>
+          <button onclick="showTopupModal()" class="btn btn-secondary mt-2">Request Topup</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Total Spend</h3>
+            <div class="value">$<%= spendStats.total_spend.toFixed(2) %></div>
+          </div>
+          <div class="stat-card">
+            <h3>Total Sales</h3>
+            <div class="value"><%= spendStats.total_sales %></div>
+          </div>
+          <div class="stat-card">
+            <h3>Average Cost/Sale</h3>
+            <div class="value">
+              <% if (spendStats.total_sales > 0) { %>
+                $<%= (spendStats.total_spend / spendStats.total_sales).toFixed(2) %>
+              <% } else { %>
+                N/A
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Daily Spends -->
+        <div class="table-container mb-3">
+          <div class="table-header">
+            <h2>Recent Daily Spends</h2>
+            <a href="/client/spending" class="btn btn-primary btn-sm">View All</a>
+          </div>
+          <% if (recentSpends.length > 0) { %>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Sales</th>
+                <th>Cost per Sale</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% recentSpends.forEach(spend => { %>
+              <tr>
+                <td><%= new Date(spend.spend_date).toLocaleDateString() %></td>
+                <td>$<%= spend.amount.toFixed(2) %></td>
+                <td><%= spend.sales_count %></td>
+                <td>
+                  <% if (spend.sales_count > 0) { %>
+                    $<%= (spend.amount / spend.sales_count).toFixed(2) %>
+                  <% } else { %>
+                    N/A
+                  <% } %>
+                </td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+          <% } else { %>
+          <div style="padding: 20px; text-align: center; color: #6b7280;">
+            No spending data yet.
+          </div>
+          <% } %>
+        </div>
+
+        <!-- Projects -->
+        <div class="table-container mb-3">
+          <div class="table-header">
+            <h2>My Projects</h2>
+          </div>
+          <% if (projects.length > 0) { %>
+          <table>
+            <thead>
+              <tr>
+                <th>Project Name</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Assigned To</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% projects.forEach(project => { %>
+              <tr>
+                <td><%= project.project_name %></td>
+                <td><span class="badge badge-info"><%= project.project_type.replace(/_/g, ' ') %></span></td>
+                <td>
+                  <span class="badge badge-<%= project.status === 'completed' ? 'success' : project.status === 'on_hold' ? 'danger' : 'warning' %>">
+                    <%= project.status.replace('_', ' ') %>
+                  </span>
+                </td>
+                <td><%= project.assigned_to_name || 'Unassigned' %></td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+          <% } else { %>
+          <div style="padding: 20px; text-align: center; color: #6b7280;">
+            No projects yet.
+          </div>
+          <% } %>
+        </div>
+
+        <!-- Topup Requests -->
+        <div class="table-container">
+          <div class="table-header">
+            <h2>My Topup Requests</h2>
+          </div>
+          <% if (topupRequests.length > 0) { %>
+          <table>
+            <thead>
+              <tr>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Requested</th>
+                <th>Processed</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% topupRequests.forEach(topup => { %>
+              <tr>
+                <td>$<%= topup.amount.toFixed(2) %></td>
+                <td>
+                  <span class="badge badge-<%= topup.status === 'approved' ? 'success' : topup.status === 'rejected' ? 'danger' : 'warning' %>">
+                    <%= topup.status %>
+                  </span>
+                </td>
+                <td><%= new Date(topup.requested_at).toLocaleDateString() %></td>
+                <td><%= topup.processed_at ? new Date(topup.processed_at).toLocaleDateString() : '-' %></td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+          <% } else { %>
+          <div style="padding: 20px; text-align: center; color: #6b7280;">
+            No topup requests yet.
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Topup Modal -->
+  <div id="topupModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Request Balance Topup</h2>
+        <button class="close-modal" onclick="closeModal('topupModal')">&times;</button>
+      </div>
+      <form method="POST" action="/client/topup/request">
+        <div class="form-group">
+          <label for="amount">Amount ($) *</label>
+          <input type="number" id="amount" name="amount" step="0.01" min="1" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Request</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function showTopupModal() {
+      document.getElementById('topupModal').classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('topupModal');
+      if (event.target == modal) {
+        modal.classList.remove('active');
+      }
+    }
+  </script>
+</body>
+</html>

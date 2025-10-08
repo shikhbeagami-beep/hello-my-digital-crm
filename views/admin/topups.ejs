@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Topup Requests - Digital Marketing CRM</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="dashboard">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <h2>Digital CRM</h2>
+        <nav>
+          <a href="/admin/dashboard">Dashboard</a>
+          <a href="/admin/clients">Clients</a>
+          <a href="/admin/projects">Running Projects</a>
+          <a href="/admin/topups" class="active">Topup Requests</a>
+        </nav>
+        <div class="user-info">
+          <p><strong><%= user.name %></strong></p>
+          <p>Role: <%= user.role %></p>
+          <a href="/logout" class="btn btn-secondary btn-sm mt-2">Logout</a>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <div class="header">
+          <h1>Topup Requests</h1>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Requested At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (topupRequests.length > 0) { %>
+                <% topupRequests.forEach(topup => { %>
+                <tr>
+                  <td><%= topup.client_name %></td>
+                  <td><%= topup.email || '-' %></td>
+                  <td><%= topup.phone || '-' %></td>
+                  <td>$<%= topup.amount.toFixed(2) %></td>
+                  <td>
+                    <span class="badge badge-<%= topup.status === 'approved' ? 'success' : topup.status === 'rejected' ? 'danger' : 'warning' %>">
+                      <%= topup.status %>
+                    </span>
+                  </td>
+                  <td><%= new Date(topup.requested_at).toLocaleString() %></td>
+                  <td>
+                    <% if (topup.status === 'pending') { %>
+                      <form method="POST" action="/admin/topups/<%= topup.id %>/process" style="display: inline;">
+                        <input type="hidden" name="action" value="approve">
+                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                      </form>
+                      <form method="POST" action="/admin/topups/<%= topup.id %>/process" style="display: inline;">
+                        <input type="hidden" name="action" value="reject">
+                        <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                      </form>
+                    <% } else { %>
+                      <span style="color: #6b7280;">Processed</span>
+                    <% } %>
+                  </td>
+                </tr>
+                <% }); %>
+              <% } else { %>
+                <tr>
+                  <td colspan="7" style="text-align: center; color: #6b7280;">No topup requests found</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
